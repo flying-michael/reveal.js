@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>junit5 - a short introduction</title>
+
+	<meta name="description" content="">
+	<meta name="author" content="Michael Hoffmann">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/sky.css" id="theme">
+
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+
+	<script src="lib/js/html5shiv.js"></script>
+</head>
+
+<body>
+
+<div class="reveal">
+
+	<!-- Any section element inside of this container is displayed as a slide -->
+	<div class="slides">
+		<section>
+			<h1>Junit5</h1>
+			<h3>A short introduction</h3>
+		</section>
+
+		<section>
+			<h2>Agenda</h2>
+			<ol>
+				<li>What changed from junit4 to junit5?</li>
+				<li>Test migration on a small module</li>
+			</ol>
+		</section>
+
+		<section>
+			<section>
+
+				<h2>JUnit4 vs JUnit5</h2>
+			</section>
+			<section>
+				<h5>single jar library</h5>
+				<p>the whole library needs to be imported
+					In JUnit 5, we get more granularity and can import only what is necessary</p>
+			</section>
+			<section>
+				<h5>1 runner can only execute tests in JUnit 4 at a time</h5>
+				<p>JUnit 5 allows multiple runners to work simultaneously</p>
+			</section>
+			<section>
+				<h5>JUnit 5 makes good use of Java 8 features</h5>
+			</section>
+
+		</section>
+
+		<section>
+			<h2>Maven Dependencies</h2>
+
+			<p>new JUnit5 base api</p>
+			<pre><code class="hljs" data-trim contenteditable>
+				<dependency>
+				  <groupId>org.junit.jupiter</groupId>
+				  <artifactId>junit-jupiter-api</artifactId>
+				  <version>${junit5.version}</version>
+				  <scope>test</scope>
+				</dependency>
+			</code></pre>
+
+			<div class="fragment">
+				<p>legacy</p>
+				<pre><code class="hljs" data-trim contenteditable>
+					<dependency>
+						<groupId>org.junit.vintage</groupId>
+						<artifactId>junit-vintage-engine</artifactId>
+						<version>${junit5.version}</version>
+						<scope>test</scope>
+					</dependency>
+					</code></pre>
+			</div>
+
+		</section>
+
+		<section>
+			<section>
+				<h2>@RunWith</h2>
+				<p>Is replaced with: @ExtendWith</p>
+				<p>&gt; Spring 5.0.6</p>
+				<pre><code class="hljs" data-trim contenteditable>
+				@ExtendWith(SpringExtension.class}
+				</code></pre>
+			</section>
+
+			<section>
+				<h2>Expected Exceptions</h2>
+				<p>Is replaced with: @ExtendWith</p>
+				<p>&gt; Spring 5.0.6</p>
+				<pre><code class="hljs" data-trim contenteditable>
+				IllegalArgumentException illegalArgumentException = assertThrows(
+					IllegalArgumentException.class, () -> {
+						repository.buildQueryUri(Tenant.GMXCOM, null);});
+				assertEquals("'hotspotName' must not be null",
+					illegalArgumentException.getMessage());
+				</code></pre>
+			</section>
+
+			<section>
+				<h3>Changed Annotation (Lifecycle)</h3>
+				<p><a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-annotations">JUnit5
+					Annotations</a></p>
+				<table>
+					<thead>
+					<tr>
+						<th>JUnit4</th>
+						<th>JUnit5</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>@Test</td>
+						<td>@Test</td>
+					</tr>
+
+					<tr>
+						<td>@Before</td>
+						<td>@BeforeEach</td>
+					</tr>
+
+					<tr>
+						<td>@After</td>
+						<td>@AfterEach</td>
+					</tr>
+					<tr>
+						<td>@BeforeClass</td>
+						<td>@BeforeAll</td>
+					</tr>
+					<tr>
+						<td>@AfterClass</td>
+						<td>@AfterAll</td>
+					</tr>
+					<tr>
+						<td>@Ignored</td>
+						<td>@Disabled</td>
+					</tr>
+
+
+					</tbody>
+				</table>
+
+
+
+			</section>
+
+			<section>
+				<h2>AssertThat</h2>
+				<p>Assertions are removed in Juni5. You are encouraged to use Hamcrest (third party library).</p>
+			</section>
+
+
+			<section>
+				<h2>News</h2>
+				<ul>
+					<li class="fragment">Test do not need to be public anymore</li>
+					<li class="fragment">TestReporter as Parameter - get Test Result reports</li>
+					<li class="fragment">TestInfo e.g. do initialization for special Tags or displayName</li>
+				</ul>
+			</section>
+		</section>
+
+		<section>
+			<h2>Hints</h2>
+			<ul>
+				<li class="fragment">use Spring Boot (&gt;2.0.0) or Spring (&gt;5.0.0) if Context related Tests are
+					needed
+				</li>
+				<li class="fragment">have to migrate Rules to Extension</li>
+				<li class="fragment">Use Mockito</li>
+				<pre class="fragment"><code class="hljs" data-trim contenteditable>
+<dependency>
+  <groupId>org.mockito</groupId>
+  <artifactId>mockito-core</artifactId>
+  <version>2.18.3</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.mockito</groupId>
+  <artifactId>mockito-junit-jupiter</artifactId>
+  <version>2.18.3</version>
+  <scope>test</scope>
+</dependency>
+				</code></pre>
+			</ul>
+
+		</section>
+
+
+		<section>
+			<h2>Further reading</h2>
+			<ul>
+				<li><a href="https://junit.org/junit5/">https://junit.org/junit5/</a></li>
+				<li><a href="https://mam-confluence.1and1.com/display/PT/JUnit5">https://mam-confluence.1and1.com/display/PT/JUnit5</a></li>
+			</ul>
+
+		</section>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{
+						src: 'lib/js/classList.js', condition: function () {
+							return !document.body.classList;
+						}
+					},
+					{
+						src: 'plugin/markdown/marked.js', condition: function () {
+							return !!document.querySelector('[data-markdown]');
+						}
+					},
+					{
+						src: 'plugin/markdown/markdown.js', condition: function () {
+							return !!document.querySelector('[data-markdown]');
+						}
+					},
+					{
+						src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+							hljs.initHighlightingOnLoad();
+						}
+					},
+					{src: 'plugin/search/search.js', async: true},
+					{src: 'plugin/zoom-js/zoom.js', async: true},
+					{src: 'plugin/notes/notes.js', async: true}
+				]
+			});
+
+		</script>
+
+</body>
+</html>
